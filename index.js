@@ -9,7 +9,7 @@ app.use(express.json());
 app.use('/api',router)
 
 app.get('/',(req,res)=>{
-    res.status(200).send('<h1>Welcome to Hall booking App</h1>')
+    res.status(200).send('<h1 style=font-size:40px;font-family:Arial,Helvetica,sans-serif;>Welcome to Hall booking App</h1>')
 })
 
 app.listen(PORT,()=>{
