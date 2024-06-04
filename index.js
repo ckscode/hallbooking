@@ -9,8 +9,7 @@ app.use(express.json());
 app.use('/api',router)
 
 app.get('/',(req,res)=>{
-    console.log(new Date("2024/05/25 01:10 PM").toLocaleTimeString()>new Date("2024/05/25 02:10 PM").toLocaleTimeString())
-    res.status(200).send('app is running successfully')
+    res.status(200).send('<h1>Welcome to Hall booking App</h1>')
 })
 
 app.listen(PORT,()=>{

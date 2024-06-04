@@ -19,6 +19,7 @@ const Bookings = [
     RoomId: 1,
     status: "booked",
   },
+
 ];
 
 const BookedDetails = [
@@ -35,13 +36,12 @@ const BookedDetails = [
 ];
 
 export const rooms = (req, res) => {
-  try {
-    res.status(200).json({ message: "Rooms", data: Room });
-  } catch (err) {
-    res
-      .status(200)
-      .json({ message: "error in fetching Room details", data: err });
-  }
+    try{
+        res.status(200).json({ message:"Rooms" ,data:Room});
+    }catch(err){
+        res.status(200).json({ message: "error in fetching Room details",data:err });
+    }
+  
 };
 export const createRoom = (req, res) => {
   const { roomName, numberOfSeats, amenities, pricePerHour, RoomId } = req.body;
@@ -54,6 +54,7 @@ export const createRoom = (req, res) => {
       amenities: amenities,
       pricePerHour: pricePerHour,
       RoomId: RoomId,
+    
     };
     Room.push(createdRoom);
     res.status(200).json({ message: "new room created", room: createdRoom });
@@ -63,77 +64,79 @@ export const createRoom = (req, res) => {
 };
 
 export const bookRoom = (req, res) => {
-  try {
+  try{
     const { customerName, date, startTime, endTime, RoomId } = req.body;
     const roomExists = Room.filter((e) => e.RoomId == RoomId);
-
+ 
     if (roomExists.length === 0) {
       res.status(400).json({ message: "No Room in this ID" });
     }
 
     function isTimeRangeOverlap(start1, end1, start2, end2) {
       return start1 < end2 && start2 < end1;
-    }
-
-    function hours(timeString) {
-      const [time, period] = timeString.split(" ");
-      const [hour, minute] = time.split(":");
-      let formattedHour = parseInt(hour);
-
-      if (period === "PM") {
-        formattedHour += 12;
-      }
-
-      return `${formattedHour}:${minute}`;
-    }
-
-    const isBookingConflict = (newBooking, existingBookings) => {
-      return existingBookings.some(
-        (booking) =>
-          booking.RoomId === newBooking.RoomId &&
-          booking.date === newBooking.date &&
-          isTimeRangeOverlap(
-            hours(booking.startTime),
-            hours(booking.endTime),
-            hours(newBooking.startTime),
-            hours(newBooking.endTime)
-          )
-      );
-    };
-
-    const addBooking = (newBooking, existingBookings) => {
-      if (!isBookingConflict(newBooking, existingBookings)) {
-        existingBookings.push(newBooking);
-        const RoomName = Room.find((e) => e.RoomId == newBooking.RoomId);
-        BookedDetails.push({ ...newBooking, roomName: RoomName.roomName });
-        res.status(200).json({
-          message: "room Booked1",
-          data: newBooking,
-        });
-        console.log("Booking added successfully.");
-      } else {
-        res.status(404).json({
-          message:
-            "The room is already booked at the specified date and time range.",
-        });
-        console.log(
-          "Error: The room is already booked at the specified date and time range."
-        );
-      }
-    };
-    const bookedData = {
-      id: Bookings.length + 1,
-      customerName: customerName,
-      date: date,
-      startTime: startTime,
-      endTime: endTime,
-      RoomId: RoomId,
-      status: "booked",
-    };
-    addBooking(bookedData, Bookings);
-  } catch (err) {
-    res.status(400).json({ message: "error", error: err });
   }
+  
+  function hours(timeString) {
+    const [time, period] = timeString.split(' ');
+    const [hour, minute] = time.split(':');
+    let formattedHour = parseInt(hour);
+
+    if (period === 'PM') {
+        formattedHour += 12;
+    }
+
+    return `${formattedHour}:${minute}`;
+}
+
+
+  const isBookingConflict = (newBooking, existingBookings) =>{
+    
+      return existingBookings.some(booking =>
+          booking.RoomId === newBooking.RoomId &&
+          booking.date === newBooking.date&&
+          isTimeRangeOverlap(hours(booking.startTime), hours(booking.endTime), hours(newBooking.startTime), hours(newBooking.endTime))
+      );
+  }
+
+ 
+  const addBooking = (newBooking, existingBookings) => {
+    
+      if (!isBookingConflict(newBooking, existingBookings)) {
+          existingBookings.push(newBooking);
+          const RoomName=Room.find((e)=>e.RoomId==newBooking.RoomId);
+          BookedDetails.push({ ...newBooking, roomName:RoomName.roomName });
+          res
+            .status(200)
+            .json({
+              message: "room Booked1",
+              data: newBooking
+            });
+          console.log('Booking added successfully.');
+      } else {
+        res
+        .status(404)
+        .json({
+          message: "The room is already booked at the specified date and time range.",
+        });
+          console.log('Error: The room is already booked at the specified date and time range.');
+      }
+  }
+  const bookedData = {
+    id: Bookings.length + 1,
+    customerName: customerName,
+    date: date,
+    startTime: startTime,
+    endTime: endTime,
+    RoomId: RoomId,
+    status: "booked",
+  };
+  addBooking(bookedData, Bookings);  
+  }catch(err){
+    res.status(400).json({ message: "error",error:err });
+  }
+ 
+          
+  
 };
 
 export const getBookings = (req, res) => {
